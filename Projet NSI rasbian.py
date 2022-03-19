@@ -1,11 +1,14 @@
 import time
 import socket
+global Etat
+Etat = 0
+'''
 from adafruit_servokit import ServoKit
 
 #==================== Fonction General =======================================================#
 
 kit = Servokit(channels = 16)
-Etat = 0
+
 class Servos():
 
     def __init__(self):
@@ -39,8 +42,9 @@ class Servos():
         self.servo12.angle = 85
 
 servos = Servos()
+'''
 
-def Conversion_Chaine_to_List(Chaine):                #Convertisseur de la chaine de carctere recu, en liste de valeur >0
+def Conversion_Chaine_to_List(Chaine):                #Convertisseur de la chaine de carctere recu en liste de valeur >0
     N_chaine = []
     a=''
     for elem in Chaine:
@@ -54,7 +58,6 @@ def Conversion_Chaine_to_List(Chaine):                #Convertisseur de la chain
             else:
                N_chaine += [float(a)]
             a=''
-
     if a == 'False':
         N_chaine += [False]
     elif a == 'True':
@@ -66,7 +69,8 @@ def Conversion_Chaine_to_List(Chaine):                #Convertisseur de la chain
 
 
 def StatusMode(ID_Control,Etat):
-    ID = Conversion_Chaine_to_List(ID_Control)
+    global Etat
+    ID = ID_Control
     Status = ID[1]
     if ID[0] == 1000:
         if Status == True and Etat == 0:
@@ -77,18 +81,17 @@ def StatusMode(ID_Control,Etat):
             Etat = 3
         if Status == True and Etat == 3:
             Etat = 0
-    return Etat
 
 
+def Limite_Position(ID_control):
+    pass
 
-def bras(ID_Control):
-    ID = Conversion_Chaine_to_List(ID_Control)
 
+def Bras(ID_Control):
+    ID = ID_Control
 #===================== Bras Droit =======================================================================================#
-
     if ID[0] == 200:                                  #Id pour le joystic Manette.JR
         X,Y = ID[1],ID[2]                             #les valeurs ID seront convertie en valeur entre 0 et 180
-
         if X >= 0:
             servos.servos1.angles = X                 #SERVO CENTRALE axe y
             time.sleep(0.1) #A voir si utile
@@ -103,7 +106,6 @@ def bras(ID_Control):
             Etat = 1
         elif Status == True and Etat == 1:
             Etat = 0
-
         if Etat == 1:
             servos.servos2.angles = 0
             time.sleep(0.1)                           #A voir si utile
@@ -118,7 +120,6 @@ def bras(ID_Control):
 
     elif ID[0] == 800:                                #Id pour le joystic Manette.R1   # LA PINCE
         Status = ID[1]                                #les valeurs ID seront convertie en True ou False qui pourront etre interpreter par le compilateur
-
         if Status == True:
             servos.servos5.angles = 0                 # A voir si bon angle
             time.sleep(0.1)                           #A voir si utile
@@ -130,7 +131,6 @@ def bras(ID_Control):
 
     if ID[0] == 100:                                  #Id pour le joystic Manette.JL
         X,Y = ID[1],ID[2]                             #les valeurs ID seront convertie en valeur entre 0 et 180
-
         if X >= 0:                                    #SERVO CENTRALE axe y
             servos.servos6.angles = X
             time.sleep(0.1) #A voir si utile
@@ -145,7 +145,6 @@ def bras(ID_Control):
             Etat = 1
         elif Status == True and Etat == 1:
             Etat = 0
-
         if Etat == 1:
             servos.servos7.angles = 0
             time.sleep(0.1)                           #A voir si utile
@@ -160,7 +159,6 @@ def bras(ID_Control):
 
     elif ID[0] == 700:                                #Id pour le joystic Manette.L1   # LA PINCE
         Status = ID[1]                                #les valeurs ID seront convertie en True ou False qui pourront etre interpreter par le compilateur
-
         if Status == True:
             servos.servos10.angles = 0                # A voir si bon angle
             time.sleep(0.1)                           #A voir si utile
@@ -168,12 +166,10 @@ def bras(ID_Control):
             servos.servos10.angles = 85
             time.sleep(0.1)
 
-def tete(ID_Control):
-    ID = Conversion_Chaine_to_List(ID_Control)
-
+def Tete(ID_Control):
+    ID = ID_Control
     if ID[0] == 100:
         X,Y = ID[1],ID[2]                             #les valeurs ID seront convertie en valeur entre 0 et 180
-
         if X >= 0:                                    #SERVO CENTRALE axe y
             servos.servos11.angles = X
             time.sleep(0.1) #A voir si utile
@@ -182,6 +178,7 @@ def tete(ID_Control):
             time.sleep(0.1)
 
 #==================== Connection Raspberry  et execution ===================================================#
+'''
 HOST = '' # Server IP or Hostname   # a completer
 PORT = 12345 # Pick an open Port (1000+ recommended), must match the client sport
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -189,27 +186,40 @@ print ('Socket created')
 
 #managing error exception
 try:
-	s.bind((HOST, PORT))
-	except socket.error:
-	print ('Bind failed ')
+ s.bind((HOST, PORT))
+except socket.error:
+ print ('Bind failed ')
 
-	s.listen(5)
-	print ('Socket awaiting messages')
-	(conn, addr) = s.accept()
-	print ('Connected')
-
+s.listen(5)
+print ('Socket awaiting messages')
+(conn, addr) = s.accept()
+print ('Connected')
+'''
 # awaiting for message
+
 while True:
-	data = conn.recv(1024)
-	print ('I sent a message back in response to: ') + data
-	reply = ''
+ data = conn.recv(1024)
+ print (' message : ') + data
 
-    if
+ N_data = Conversion_Chaine_to_List(data)
+ print (N_data)
+ if N_data[0] == 1000:
+    StatusMode(N_data,Etat)
+    print('Mode:',Etat)
 
+ if Etat == 0:                                      #mode pour le controle des moteurs avec L2 et R2 pour aller tous ver l avant et L1 et R1 pour marche arriere
+    if N_data[0]>= 500 and N_data[0] <=800:
+        Moteur(N_data)
+ elif Etat == 1:                                    #mode pour le controle des bras
+    if N_data[0] >= 100 and N_data[0] <=800:
+        Bras(N_data)
+ elif Etat == 2:
+    if N__data[0] == 100:                           #mode pour le controle de la tete
+        Tete(N_data)
 
 
 	#conn.send(reply)
-	conn.close() # Close connections
+    conn.close() # Close connections
 
 
 
@@ -227,7 +237,5 @@ JR = 200
 RSB = 400
 R1 = 600
 R2 = 800
-
-envoie d info sous forme de chaine de carctere avec 2 ou 3 info [ ID_control, pos Y,X si joystick ou True ou False si boutton
-
 '''
+
