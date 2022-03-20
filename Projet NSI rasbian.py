@@ -83,7 +83,17 @@ def StatusMode(ID_Control,Etat):
             Etat = 0
 
 
-def Limite_Position(ID_control):
+def Limite_Position(ID_control):                          #renvoie True ou false
+    if servos.servo1.angles == 180:
+        return servos.servo1.angles == 180
+    elif servos.servo1.angles == 60:
+        return servos.servo1.angles == 60
+    elif servos.servo6.angles == 180:
+        return servos.servo6.angles == 180
+    elif servos.servo6.angles == 60:
+        return servos.servo6.angles == 60
+
+
     pass
 
 
@@ -101,15 +111,16 @@ def Bras(ID_Control):
 
     elif ID[0] == 400:                                #Id pour le joystic Manette.RSB  #SERVO ROTATIVE 1
         Status = ID[1]                                #les valeurs ID seront convertie en True ou False qui pourront etre interpreter par le compilateur
-        Etat = 0
+        Etats = 0
         if Status == True and Etat == 0:              #ligne pour grader le servo dans une position permanente en appuyant deux fois sur la meme touche
-            Etat = 1
+            Etats = 1
         elif Status == True and Etat == 1:
-            Etat = 0
-        if Etat == 1:
+            Etats = 0
+
+        if Etats == 1:
             servos.servos2.angles = 0
             time.sleep(0.1)                           #A voir si utile
-        elif Etat == 0:
+        elif Etats == 0:
             servos.servos2.angles = 85
             time.sleep(0.1)
 
@@ -209,7 +220,7 @@ while True:
 
  if Etat == 0:                                      #mode pour le controle des moteurs avec L2 et R2 pour aller tous ver l avant et L1 et R1 pour marche arriere
     if N_data[0]>= 500 and N_data[0] <=800:
-        Moteur(N_data)
+        Moteur(N_data)  #a cree
  elif Etat == 1:                                    #mode pour le controle des bras
     if N_data[0] >= 100 and N_data[0] <=800:
         Bras(N_data)
