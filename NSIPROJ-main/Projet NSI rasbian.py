@@ -1,15 +1,11 @@
 import time
 import socket
 from adafruit_servokit import ServoKit
-
 # ==================== Fonction General =======================================================#
-
 kit = ServoKit(channels=16)
 Etat = 0
-
-
+ 
 class Servos:
-
     def __init__(self):
         self.servos1 = kit.servo[11]
         self.servos2 = kit.servo[12]
@@ -37,10 +33,7 @@ class Servos:
         self.servos10.angle = 85
         self.servos11.angle = 85
         self.servos12.angle = 85
-
-
 servos = Servos()
-
 
 def Conversion_Chaine_to_List(Chaine):  # Convertisseur de la chaine de carctere recu, en liste de valeur >0
     N_chaine = []
@@ -56,7 +49,6 @@ def Conversion_Chaine_to_List(Chaine):  # Convertisseur de la chaine de carctere
             else:
                 N_chaine.append(float(a))
             a = ''
-
     if a == 'False':
         N_chaine.append(False)
     elif a == 'True':
@@ -65,9 +57,7 @@ def Conversion_Chaine_to_List(Chaine):  # Convertisseur de la chaine de carctere
         N_chaine.append(float(a))
     return N_chaine
 
-
-print(Conversion_Chaine_to_List("100,True,False,30,45.5"))
-
+#print(Conversion_Chaine_to_List("100,True,False,30,45.5"))
 
 def StatusMode(ID_Control, Etat):
     ID = Conversion_Chaine_to_List(ID_Control)
@@ -83,15 +73,13 @@ def StatusMode(ID_Control, Etat):
             Etat = 0
     return Etat
 
-
 def bras(ID_Control):
     ID = Conversion_Chaine_to_List(ID_Control)
 
-    # ===================== Bras Droit
+# ===================== Bras Droit =================================================================#
 
     if ID[0] == 200:  # Id pour le joystic Manette.JR
         X, Y = ID[1], ID[2]  # les valeurs ID seront convertie en valeur entre 0 et 180
-
         if X >= 0:
             servos.servos1.angles = X  # SERVO CENTRALE axe y
             time.sleep(0.1)  # A voir si utile
@@ -122,9 +110,7 @@ def bras(ID_Control):
         time.sleep(0.1)  # A voir si utile
 
     elif ID[0] == 800:  # Id pour le joystic Manette.R1   # LA PINCE
-        Status = ID[
-            1]  # les valeurs ID seront convertie en True ou False qui pourront etre interpreter par le compilateur
-
+        Status = ID[1]  # les valeurs ID seront convertie en True ou False qui pourront etre interpreter par le compilateur
         if Status:
             servos.servos5.angles = 0  # A voir si bon angle
             time.sleep(0.1)  # A voir si utile
@@ -136,7 +122,6 @@ def bras(ID_Control):
 
     if ID[0] == 100:  # Id pour le joystic Manette.JL
         X, Y = ID[1], ID[2]  # les valeurs ID seront convertie en valeur entre 0 et 180
-
         if X >= 0:  # SERVO CENTRALE axe y
             servos.servos6.angles = X
             time.sleep(0.1)  # A voir si utile
@@ -180,10 +165,8 @@ def bras(ID_Control):
 
 def tete(ID_Control):
     ID = Conversion_Chaine_to_List(ID_Control)
-
     if ID[0] == 100:
         X, Y = ID[1], ID[2]  # les valeurs ID seront convertie en valeur entre 0 et 180
-
         if X >= 0:  # SERVO CENTRALE axe y
             servos.servos11.angles = X
             time.sleep(0.1)  # A voir si utile
@@ -193,7 +176,9 @@ def tete(ID_Control):
 
 
 # ==================== Connection Raspberry  et execution ===================================================#
-HOST = ''  # Server IP or Hostname   # a completer
+#serveur
+# HOST = input(str('Adresse IP du seerveur')) # a voir si meilleur 
+HOST = ''  # Server IP or Hostname   # a completer #le meme IP a definir ici et a mettre au client
 PORT = 12345  # Pick an open Port (1000+ recommended), must match the client sport
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 print('Socket created')
@@ -204,26 +189,20 @@ try:
 except socket.error:
     print('Bind failed ')
 
-    s.listen(5)
-    print('Socket awaiting messages')
-    (conn, addr) = s.accept()
-    print('Connected')
+s.listen(5)
+print('Socket awaiting messages')
+(conn, addr) = s.accept()
+print('Connected')
 
-"""
-
-# awaiting for message
 while True:
     data = conn.recv(1024)
-    print ('I sent a message back in response to: ') + data
-    reply = ''
-
-    if
-
-
-
-    #conn.send(reply)
-    conn.close() # Close connections
-
+    print (data)
+    if data == b'terminating':
+        conn.close() # Close connections
+        break
+    
+    
+        
 
 """
 
