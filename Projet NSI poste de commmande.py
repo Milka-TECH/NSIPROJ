@@ -1,6 +1,4 @@
 import socket
-
-
 # ===================================== Fonction general ====================================#
 def Convertion_180(nbr):  # Convertisseur de rappot -1/0/1 a 0/85/180 a mettre sur la station de controle
     if nbr == -1:
@@ -17,12 +15,11 @@ def Convertion_180(nbr):  # Convertisseur de rappot -1/0/1 a 0/85/180 a mettre s
         raise ValueError
     return round(N_nbr)
 
-
 # + le code Claire avec la definition des ID_Controls
 
 # ================================= Connection Raspberry ====================================#
-
-HOST = ''  # Enter IP or Hostname of your server # A completer
+#client 
+HOST = ''  # Enter IP or Hostname of your server # A completer # il faut mettre le meme IP pour le serveur 
 PORT = 12345  # Pick an open Port (1000+ recommended), must match the server port
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((HOST, PORT))
@@ -30,5 +27,9 @@ s.connect((HOST, PORT))
 # Lets loop awaiting for your input
 while True:
     command = input('Enter your command: ')
-    s.send(command)
+    s.send(command.encode('utf-8'))
+    if command == b'stop':
+        commande = 'terminating'
+        s.send(command.encode('utf-8'))
+        break
 # reply = s.recv(1024)
